@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Formulário de Contato</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 40px;
+    }
+    fieldset {
+      border: 2px solid #333;
+      padding: 20px;
+      width: 400px;
+      border-radius: 8px;
+    }
+    legend {
+      font-weight: bold;
+      padding: 0 10px;
+      color: #333;
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: bold;
+      color: #555;
+    }
+    input[type="text"],
+    input[type="email"],
+    input[type="date"] {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    .sexo-options {
+      margin-top: 5px;
+    }
+    .sexo-options label {
+        display: inline-block;
+        margin-right: 15px;
+        font-weight: normal;
+    }
+    .botoes {
+      margin-top: 20px;
+      text-align: right;
+    }
+    .botoes input[type="submit"],
+    .botoes input[type="reset"] {
+      padding: 10px 20px;
+      margin-left: 10px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    .botoes input[type="submit"] {
+      background-color: #4CAF50; /* Verde */
+      color: white;
+    }
+    .botoes input[type="submit"]:hover {
+      background-color: #45a049;
+    }
+    .botoes input[type="reset"] {
+      background-color: #f44336; /* Vermelho */
+      color: white;
+    }
+    .botoes input[type="reset"]:hover {
+      background-color: #da190b;
+    }
+    .error-message {
+        color: red;
+        font-size: 0.9em;
+        margin-top: 5px;
+        display: block;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Formulário de Contato</h1>
+
+  <form id="formularioContato" method="post" action="http://paulohbl.free.nf/formulario/semana4_post.php" onsubmit="return validarFormulario()">
+    <fieldset>
+      <legend>Dados Pessoais</legend>
+
+      <label for="nome">Nome:</label>
+      <input type="text" id="nome" name="nome" required>
+      <span id="nomeError" class="error-message"></span>
+
+      <label for="email">E-mail:</label>
+      <input type="email" id="email" name="email" required>
+      <span id="emailError" class="error-message"></span>
+
+      <label for="cpf">CPF:</label>
+      <input type="text" id="cpf" name="cpf" maxlength="11" required>
+      <span id="cpfError" class="error-message"></span>
+
+      <label for="datanascimento">Data de Nascimento:</label>
+      <input type="date" id="datanascimento" name="datanascimento" required>
+      <label>Sexo:</label>
+      <div class="sexo-options">
+        <input type="radio" id="masculino" name="sexo" value="Masculino">
+        <label for="masculino">Masculino</label>
+
+        <input type="radio" id="feminino" name="sexo" value="Feminino">
+        <label for="feminino">Feminino</label>
+      </div>
+      <span id="sexoError" class="error-message"></span>
+
+      <label for="telefone">Telefone:</label>
+      <input type="text" id="telefone" name="telefone" maxlength="11" required>
+      <span id="telefoneError" class="error-message"></span>
+
+      <div class="botoes">
+        <input type="submit" value="Enviar">
+        <input type="reset" value="Cancelar">
+      </div>
+    </fieldset>
+  </form>
+
+  <script>
+    // Função de validação de CPF (adaptada de https://www.devmedia.com.br/validar-cpf-com-javascript/23916)
+    function validarCPF(strCPF) {
+        var Soma;
+        var Resto;
+        Soma = 0;
+        // Remove caracteres não numéricos
+        strCPF = strCPF.replace(/[^\d]/g, '');
+
+        if (strCPF == "00000000000" || strCPF == "11111111111" || strCPF == "22222222222" ||
+            strCPF == "33333333333" || strCPF == "44444444444" || strCPF == "55555555555" ||
+            strCPF == "66666666666" || strCPF == "77777777777" || strCPF == "88888888888" ||
+            strCPF == "99999999999") return false;
+
+        for (i=1; i<=9; i++) Soma = Soma + parseInt(strCPF.substring(i-1, i)) * (11 - i);
+        Resto = (Soma * 10) % 11;
+
+        if ((Resto == 10) || (Resto == 11))  Resto = 0;
+        if (Resto != parseInt(strCPF.substring(9, 10))) return false;
+
+        Soma = 0;
+        for (i = 1; i <= 10; i++) Soma = Soma + parseInt(strCPF.substring(i-1, i)) * (12 - i);
+        Resto = (Soma * 10) % 11;
+
+        if ((Resto == 10) || (Resto == 11)) Resto = 0;
+        if (Resto != parseInt(strCPF.substring(10, 11))) return false;
+        return true;
+    }
+
+    function validarFormulario() {
+      // Limpa mensagens de erro anteriores
+      document.getElementById('nomeError').textContent = '';
+      document.getElementById('emailError').textContent = '';
+      document.getElementById('cpfError').textContent = '';
+      document.getElementById('sexoError').textContent = '';
+      document.getElementById('telefoneError').textContent = '';
+
+      let nome = document.getElementById('nome').value;
+      let email = document.getElementById('email').value;
+      let cpf = document.getElementById('cpf').value;
+      let sexoMasculino = document.getElementById('masculino').checked;
+      let sexoFeminino = document.getElementById('feminino').checked;
+      let telefone = document.getElementById('telefone').value;
+
+      let isValid = true;
+
+      // Validação Nome
+      if (nome.length <= 2 || nome.length > 100) {
+        document.getElementById('nomeError').textContent = 'Nome deve ter entre 3 e 100 caracteres.';
+        isValid = false;
+      }
+
+      // Validação E-mail
+      if (email.length <= 10 || email.length > 100) {
+        document.getElementById('emailError').textContent = 'E-mail deve ter entre 11 e 100 caracteres.';
+        isValid = false;
+      }
+
+      // Validação CPF
+      if (cpf.length !== 11) {
+        document.getElementById('cpfError').textContent = 'CPF deve ter exatamente 11 dígitos.';
+        isValid = false;
+      } else if (!validarCPF(cpf)) {
+        document.getElementById('cpfError').textContent = 'CPF inválido.';
+        isValid = false;
+      }
+
+      // Validação Sexo
+      if (!sexoMasculino && !sexoFeminino) {
+        document.getElementById('sexoError').textContent = 'Selecione uma opção de sexo.';
+        isValid = false;
+      }
+
+      // Validação Telefone
+      if (telefone.length !== 11) {
+        document.getElementById('telefoneError').textContent = 'Telefone deve ter exatamente 11 dígitos (DDD + 9 dígitos).';
+        isValid = false;
+      }
+
+      return isValid; // Se isValid for false, o formulário não será enviado
+    }
+  </script>
+
+</body>
+</html>
